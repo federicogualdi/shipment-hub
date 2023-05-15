@@ -5,10 +5,10 @@ import com.federicogualdi.shipmenthub.entities.enums.PackageStatus;
 
 public class UpdatePackageDto {
     public Coordinate coordinate;
-    public PackageStatus packageStatus;
+    public PackageStatus status;
 
     @Override
     public String toString() {
-        return "UpdatePackageDto{" + "coordinate=" + coordinate + '}';
+        return "UpdatePackageDto{" + "coordinate=" + coordinate + ", status=" + status + '}';
     }
 }

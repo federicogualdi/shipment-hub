@@ -1,6 +1,5 @@
 package com.federicogualdi.shipmenthub.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.federicogualdi.shipmenthub.entities.embeddable.Coordinate;
 import com.federicogualdi.shipmenthub.entities.embeddable.InternalDate;
@@ -41,6 +40,18 @@ public class Package extends PanacheEntityBase {
         return aPackage;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public PackageStatus getStatus() {
+        return status;
+    }
+
     public Order getOrder() {
         return order;
     }
@@ -75,6 +86,6 @@ public class Package extends PanacheEntityBase {
 
     @Override
     public String toString() {
-        return "Package{" + "id=" + id + ", order=" + order + ", destination=" + destination + ", status=" + status + '}';
+        return "Package{" + "id=" + id + ", orderId=" + order.getId() + ", destination=" + destination + ", status=" + status + '}';
     }
 }

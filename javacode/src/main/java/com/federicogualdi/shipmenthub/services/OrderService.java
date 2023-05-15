@@ -1,14 +1,19 @@
 package com.federicogualdi.shipmenthub.services;
 
 import com.federicogualdi.shipmenthub.api.rest.dto.CreateOrderDto;
+import com.federicogualdi.shipmenthub.api.rest.dto.OrderDto;
 import com.federicogualdi.shipmenthub.api.rest.dto.UpdateOrderDto;
 import com.federicogualdi.shipmenthub.api.rest.dto.converter.OrderConverter;
 import com.federicogualdi.shipmenthub.api.rest.dto.converter.PackageConverter;
 import com.federicogualdi.shipmenthub.entities.Depot;
 import com.federicogualdi.shipmenthub.entities.Order;
 import com.federicogualdi.shipmenthub.entities.Package;
+import com.federicogualdi.shipmenthub.entities.Supplier;
 import com.federicogualdi.shipmenthub.entities.embeddable.Coordinate;
 import com.federicogualdi.shipmenthub.entities.enums.PackageStatus;
+import io.quarkus.panache.common.Parameters;
+import io.quarkus.panache.common.Sort;
+import io.quarkus.security.ForbiddenException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -31,44 +37,46 @@ public class OrderService {
     PackageConverter packageConverter;
 
     @Transactional
-    public void createOrder(CreateOrderDto createOrderDto) {
-        logger.info("Create new order with param {}", createOrderDto);
+    public void createOrder(Supplier supplier, CreateOrderDto createOrderDto) {
+        logger.info("Supplier {}:{} create order with param {}", supplier.getId(), supplier.getName(), createOrderDto);
 
         Depot depot = Depot.findById(createOrderDto.depotId);
-        var order = Order.Create(depot);
-        var packages = createOrderDto.createPackageDtoList.stream().map(packageDto -> Package.Create(order, packageDto.latitude, packageDto.longitude)).collect(Collectors.toList());
+        Order order = Order.Create(supplier, depot);
+        List<Package> packages = packageConverter.to(order, createOrderDto.packages);
+
         Package.persist(packages);
     }
 
 
-    public Order updateOrder(UpdateOrderDto updateOrderDto, Integer orderId) {
+    public void updateOrder(Supplier supplier, Integer orderId, UpdateOrderDto updateOrderDto) {
         logger.info("Updating order {} with param {}", orderId, updateOrderDto);
 
         Order order = Order.findById(orderId);
-        if (order.getPackages().size() != updateOrderDto.updatePackageDtoList.size()) {
+        if (!Objects.equals(supplier.getId(), order.getSupplier().getId())) {
+            throw new ForbiddenException("User requested order updating has not the authorization to perform this action");
+        }
+        if (order.getPackages().size() != updateOrderDto.packages.size()) {
             throw new BadRequestException("Updated packages cannot be removed. You can only change parameters.");
         }
 
         orderConverter.updateOrder(order, updateOrderDto);
         Order.persist(order);
-        return order;
     }
 
     public List<Coordinate> plan(Integer depotId) {
         Depot depot = Depot.findById(depotId);
-        List<Coordinate> coordinates = depot.getOrders().parallelStream().flatMap(o -> o.getPackages().parallelStream().filter(p -> PackageStatus.IN_TRANSIT.equals(p.status())).map(p -> p.getDestination())).collect(Collectors.toList());
-        //List<Package> packages = Package.find("status", PackageStatus.IN_TRANSIT).list();
-        //List<Coordinate> coordinates = new ArrayList<>(packages.stream().filter(p -> depotId.equals(p.getOrder().getDepot().getId())).map(Package::getDestination).toList());
+        String queryOrders = "SELECT o FROM `Order` o JOIN o.packages p WHERE p.status = :package_status";
+        List<Order> orders = Order.find(queryOrders, Parameters.with("package_status", PackageStatus.IN_TRANSIT)).list();
+        List<Coordinate> coordinates = orders.stream().filter(o -> o.getDepot().getId() == depotId).map(Order::getPackages).flatMap(List::stream).map(Package::getDestination).collect(Collectors.toList());
 
-        if (coordinates.isEmpty()) {
-            return coordinates;
-        }
+        // fake call to service that compute the best path through complex algorithm
+        return packageConverter.toRoutePlanCoordinate(depot, coordinates);
+    }
 
-        coordinates.add(0, depot.getCoordinate());
-        coordinates.add(depot.getCoordinate());
-        return coordinates;
-        //return Order.find("package.status = ?1", PackageStatus.IN_TRANSIT).list();
-        //return Order.find("select p.id, p.order_id, p.latitude, p.longitude, p.status, p.created_on, p.updated_on FROM `package` p join `order` where p.status = 1", Parameters.with("status", PackageStatus.IN_TRANSIT)).list();
-        //return Package.find("select p.id, p.latitude, p.longitude, p.status, p.created_on, p.updated_on FROM `package` p join `order` where p.status = 1", Parameters.with("status", PackageStatus.IN_TRANSIT)).list();
+    public List<OrderDto> getOrders(Supplier supplier) {
+        logger.info("Retrieving orders for supplier {}:{}", supplier.getId(), supplier.getName());
+        List<Order> orders = Order.find("supplier.id", Sort.ascending("id"), supplier.getId()).list();
+
+        return orderConverter.to(orders);
     }
 }

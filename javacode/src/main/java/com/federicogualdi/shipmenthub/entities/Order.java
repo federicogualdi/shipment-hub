@@ -17,21 +17,27 @@ public class Order extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonBackReference
     private List<Package> packages;
 
     @JoinColumn(name = "depot_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
     private Depot depot;
+
+    @JoinColumn(name = "supplier_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JsonManagedReference
+    private Supplier supplier;
 
     @Embedded
     private InternalDate internalDate;
 
-    public static Order Create(Depot depot) {
+    public static Order Create(Supplier supplier, Depot depot) {
         Order order = new Order();
         order.setDepot(depot);
+        order.setSupplier(supplier);
         order.setPackages(new ArrayList<>());
         order.setInternalDate(InternalDate.Create());
 
@@ -70,10 +76,16 @@ public class Order extends PanacheEntityBase {
         this.depot = depot;
     }
 
+    public Supplier getSupplier() {
+        return supplier;
+    }
 
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
+    }
 
     @Override
     public String toString() {
-        return "Order{" + "id=" + id + ", packages=" + packages + ", depot=" + depot + ", internalDate=" + internalDate + '}';
+        return "Order{" + "id=" + id + ", packages=" + packages + ", depotId=" + depot.getId() + ", supplierId=" + supplier.getId() + ", internalDate=" + internalDate + '}';
     }
 }

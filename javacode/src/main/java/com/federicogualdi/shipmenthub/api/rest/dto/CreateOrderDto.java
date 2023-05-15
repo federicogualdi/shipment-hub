@@ -5,10 +5,10 @@ import java.util.List;
 public class CreateOrderDto {
 
     public int depotId;
-    public List<CreatePackageDto> createPackageDtoList;
+    public List<CreatePackageDto> packages;
 
     @Override
     public String toString() {
-        return "CreateOrderDto{" + "depotId=" + depotId + ", createPackageDtoList=" + createPackageDtoList + '}';
+        return "CreateOrderDto{" + "depotId=" + depotId + ", packages=" + packages + '}';
     }
 }
