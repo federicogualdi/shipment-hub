@@ -3,6 +3,8 @@ package com.federicogualdi.shipmenthub.api.rest.dto.converter;
 import com.federicogualdi.shipmenthub.api.rest.dto.OrderDto;
 import com.federicogualdi.shipmenthub.api.rest.dto.UpdateOrderDto;
 import com.federicogualdi.shipmenthub.entities.Order;
+import com.federicogualdi.shipmenthub.entities.Package;
+import com.federicogualdi.shipmenthub.entities.embeddable.Coordinate;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -39,5 +41,9 @@ public class OrderConverter {
 
     public void updateOrder(Order order, UpdateOrderDto updateOrderDto) {
         order.setPackages(packageConverter.updatePackage(order.getPackages(), updateOrderDto.packages));
+    }
+
+    public List<Coordinate> toPackageCoordinates(List<Order> orders, int depotId) {
+        return orders.stream().filter(o -> o.getDepot().getId() == depotId).map(Order::getPackages).flatMap(List::stream).map(Package::getDestination).collect(Collectors.toList());
     }
 }

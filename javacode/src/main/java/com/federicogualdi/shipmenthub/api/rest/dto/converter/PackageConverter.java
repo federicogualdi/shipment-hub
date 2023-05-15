@@ -50,7 +50,7 @@ public class PackageConverter {
         return createPackageDtoList.stream().map(packageDto -> Package.Create(order, packageDto.latitude, packageDto.longitude)).collect(Collectors.toList());
     }
 
-    public List<Coordinate> toRoutePlanCoordinate(Depot depot, List<Coordinate> packagesCoordinates){
+    public List<Coordinate> toRoutePlanCoordinate(Depot depot, List<Coordinate> packagesCoordinates) {
         if (packagesCoordinates.isEmpty()) {
             return new ArrayList<>();
         }

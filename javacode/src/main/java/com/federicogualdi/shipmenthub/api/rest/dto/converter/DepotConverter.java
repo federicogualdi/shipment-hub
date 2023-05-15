@@ -1,9 +1,7 @@
 package com.federicogualdi.shipmenthub.api.rest.dto.converter;
 
 import com.federicogualdi.shipmenthub.api.rest.dto.DepotDto;
-import com.federicogualdi.shipmenthub.api.rest.dto.SupplierDto;
 import com.federicogualdi.shipmenthub.entities.Depot;
-import com.federicogualdi.shipmenthub.entities.Supplier;
 import jakarta.enterprise.context.ApplicationScoped;
 
 

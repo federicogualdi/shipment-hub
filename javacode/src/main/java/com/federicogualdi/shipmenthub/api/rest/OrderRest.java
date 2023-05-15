@@ -4,8 +4,6 @@ package com.federicogualdi.shipmenthub.api.rest;
 import com.federicogualdi.shipmenthub.api.rest.dto.CreateOrderDto;
 import com.federicogualdi.shipmenthub.api.rest.dto.OrderDto;
 import com.federicogualdi.shipmenthub.api.rest.dto.UpdateOrderDto;
-import com.federicogualdi.shipmenthub.entities.Order;
-import com.federicogualdi.shipmenthub.entities.Package;
 import com.federicogualdi.shipmenthub.entities.Supplier;
 import com.federicogualdi.shipmenthub.entities.embeddable.Coordinate;
 import com.federicogualdi.shipmenthub.services.AuthService;
