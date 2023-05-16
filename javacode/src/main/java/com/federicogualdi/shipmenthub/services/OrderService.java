@@ -18,7 +18,6 @@ import io.quarkus.security.ForbiddenException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +55,7 @@ public class OrderService {
         packageRepository.persist(packages);
     }
 
-
+    @Transactional
     public void updateOrder(Supplier supplier, Integer orderId, UpdateOrderDto updateOrderDto) {
         logger.info("Updating order {} with param {}", orderId, updateOrderDto);
 
@@ -64,12 +63,19 @@ public class OrderService {
         if (!Objects.equals(supplier.getId(), order.getSupplier().getId())) {
             throw new ForbiddenException("User requested order updating has not the authorization to perform this action");
         }
-        if (order.getPackages().size() != updateOrderDto.packages.size()) {
-            throw new BadRequestException("Updated packages cannot be removed. You can only change parameters.");
+
+        if (Objects.nonNull(updateOrderDto.packages) && !updateOrderDto.packages.isEmpty() && updateOrderDto.packages.size() == order.getPackages().size()) {
+            logger.debug("Updating packages in order {}", orderId);
+            orderConverter.updateOrder(order, updateOrderDto);
         }
 
-        orderConverter.updateOrder(order, updateOrderDto);
-        orderRepository.persist(order);
+        if (Objects.nonNull(updateOrderDto.depotId)) {
+            logger.debug("Updating depot in order {}", orderId);
+            Depot depot = depotRepository.findById(updateOrderDto.depotId);
+            order.setDepot(depot);
+        }
+
+        order.persist();
     }
 
     public List<Coordinate> plan(Integer depotId) {
