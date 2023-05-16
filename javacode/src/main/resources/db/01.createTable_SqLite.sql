@@ -45,9 +45,9 @@ create table package_SEQ (next_val bigint);
 insert into package_SEQ values ( 1 );
 
 
-INSERT INTO depot (name, latitude, longitude) VALUES ('depot-test-1', 45.0, 55.0);
-INSERT INTO depot (name, latitude, longitude) VALUES ('depot-test-2', 55.0, 65.0);
-INSERT INTO depot (name, latitude, longitude) VALUES ('depot-test-3', 65.0, 75.0);
+INSERT INTO depot (name, latitude, longitude) VALUES ('Milano', 45.4639627, 9.189885);
+INSERT INTO depot (name, latitude, longitude) VALUES ('Torino', 45.0684587, 7.6748147);
+INSERT INTO depot (name, latitude, longitude) VALUES ('Roma', 41.8992204, 12.5090232);
 
 INSERT INTO supplier (name) VALUES ('supplier-1');
 
