@@ -35,7 +35,7 @@ public class Package extends PanacheEntityBase {
         aPackage.setOrder(order);
         aPackage.setDestination(Coordinate.Create(latitude, longitude));
         aPackage.setInternalDate(InternalDate.Create());
-        aPackage.setStatus(PackageStatus.IN_TRANSIT);
+        aPackage.setStatus(PackageStatus.STOCKED);
 
         return aPackage;
     }

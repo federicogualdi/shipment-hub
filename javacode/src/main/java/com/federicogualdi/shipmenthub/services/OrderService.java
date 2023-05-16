@@ -80,7 +80,7 @@ public class OrderService {
 
     public List<Coordinate> plan(Integer depotId) {
         Depot depot = depotRepository.findById(depotId);
-        List<Order> orders = orderRepository.findOrdersPackageWithStatus(PackageStatus.IN_TRANSIT);
+        List<Order> orders = orderRepository.findOrdersPackageWithStatus(PackageStatus.STOCKED);
         List<Coordinate> coordinates = orderConverter.toPackageCoordinates(orders, depotId);
 
         // fake call to service that compute the best path through complex algorithm

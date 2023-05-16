@@ -7,6 +7,7 @@ import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -40,6 +41,10 @@ public class OrderRepository implements PanacheRepository<Order> {
 
         int startIndex = skip != null ? skip : 0;
         int endIndex = top != null ? Math.min(startIndex + top, entities.size()) : entities.size();
+
+        if (startIndex > entities.size()) {
+            return new ArrayList<>();
+        }
 
         return entities.subList(startIndex, endIndex);
     }
