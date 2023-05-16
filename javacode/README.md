@@ -1,16 +1,18 @@
 # Shipment-Hub
 
 # Backend Info
-In this demo, we chose to use SqLite as the DB to manage the default values of certain entities and to showcase the capability of using an ORM.  
+In this demo, I chose to use SqLite as the DB to manage the default values of certain entities and to showcase the capability of using an ORM.  
 Specifically, we utilized Panache, which allows us to develop this demo more rapidly as it provides "built-in" methods for querying the database.  
 > **_NOTE:_**  In order to correctly utilize SqLite, I had to create queries suitable for that engine.  
 > 
 > With other engines such as MySQL, PostgreSQL, etc., the choices for data types would have been different.  
 > Specifically, the choices related to the data type for primary-keys in tables.
 
+> **Warning:** In order to correctly use this application you should use Java 17.
+
 
 ## Build Docker Image
-A new parameter has been added to `application.properties` that automatically builds a Docker image by executing that command.
+With parameter `quarkus.container-image.build=true` set in `application.properties` it builds a Docker image by executing that command.
 ```shell script
  ./mvnw clean install
 ``` 
@@ -46,9 +48,9 @@ ___
 
 `Supplier`
 
-| id | name       |  
-|----|------------|
-| 1  | supplier-1 |  
+| id | name          |  
+|----|---------------|
+| 1  | fake-supplier |  
 
 
 ---
@@ -64,9 +66,34 @@ ___
 
 
 1. Insert new Order
+
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{
     "depotId": {depot_id},
+    "packages": [
+        {
+            "latitude": {latitude},
+            "longitude": {longitude}
+        },
+        {
+            "latitude": {latitude},
+            "longitude": {longitude}
+        },
+        {
+            "latitude": {latitude},
+            "longitude": {longitude}
+        },
+        {
+            "latitude": {latitude},
+            "longitude": {longitude}
+        }
+    ]
+}' http://localhost:8080/orders
+```
+`Example`
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{
+    "depotId": 1,
     "packages": [
         {
             "latitude": 41.9028,
@@ -92,6 +119,32 @@ curl -X POST -H "Content-Type: application/json" -d '{
 2. Update some order's fields
 ```bash
 curl -X PUT -H "Content-Type: application/json" -d '{
+    "depotId": {depot_id},
+    "packages": [
+        {
+            "coordinate": {
+                "latitude": {latitude},
+                "longitude": {longitude}
+            }
+        },
+        {
+        },
+        {
+            "status": {status}
+        },
+        {
+            "status": {status},
+            "coordinate": {
+                "latitude": {latitude},
+                "longitude": {longitude}
+            }
+        }
+    ]
+}' http://localhost:8080/orders/{order_id}
+```
+`Example`
+```bash
+curl -X PUT -H "Content-Type: application/json" -d '{
     "depotId": 2,
     "packages": [
         {
@@ -113,13 +166,18 @@ curl -X PUT -H "Content-Type: application/json" -d '{
             }
         }
     ]
-}' http://localhost:8080/orders/{order_id}
+}' http://localhost:8080/orders/1
 ```
 
 
 3. Start route planning by Depot
 ```bash
 curl -X POST -H "Content-Type: application/json" http://localhost:8080/orders/plan/{depot_id}
+```
+`Example`
+
+```bash
+curl -X POST -H "Content-Type: application/json" http://localhost:8080/orders/plan/2
 ```
 
 
@@ -131,6 +189,7 @@ curl -X GET -H "Content-Type: application/json" \
 "&skip={skip}" \
 "&top={top}"
 ```
+`Example`
 ```bash
 curl -X GET -H "Content-Type: application/json" "localhost:8080/orders?orderBy=id&orderDirection=asc&skip=0&top=20"
 ```
