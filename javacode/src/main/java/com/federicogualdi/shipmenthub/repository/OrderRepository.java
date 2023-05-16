@@ -25,8 +25,23 @@ public class OrderRepository implements PanacheRepository<Order> {
         return Order.find(queryOrders, Parameters.with("package_status", packageStatus)).list();
     }
 
-    public List<Order> findOrdersBySupplierId(int supplierId) {
-        return Order.find("supplier.id", Sort.ascending("id"), supplierId).list();
+    public List<Order> findOrdersBySupplierId(int supplierId, String orderBy, String orderDirection, Integer skip, Integer top) {
+        return this.findOrders("supplier.id", orderBy, orderDirection, skip, top, supplierId);
+    }
+
+    private List<Order> findOrders(String query, String orderBy, String orderDirection, Integer skip, Integer top, Object... params) {
+
+        Sort.Direction direction = Sort.Direction.Ascending;
+        if (orderDirection != null && orderDirection.equalsIgnoreCase("desc")) {
+            direction = Sort.Direction.Descending;
+        }
+
+        List<Order> entities = Order.find(query, Sort.by(orderBy, direction).and("id", Sort.Direction.Ascending), 1).list();
+
+        int startIndex = skip != null ? skip : 0;
+        int endIndex = top != null ? Math.min(startIndex + top, entities.size()) : entities.size();
+
+        return entities.subList(startIndex, endIndex);
     }
 
 }

@@ -87,9 +87,9 @@ public class OrderService {
         return packageConverter.toRoutePlanCoordinate(depot, coordinates);
     }
 
-    public List<OrderDto> getOrders(Supplier supplier) {
+    public List<OrderDto> getOrders(Supplier supplier, String orderBy, String orderDirection, Integer skip, Integer top) {
         logger.info("Retrieving orders for supplier {}:{}", supplier.getId(), supplier.getName());
-        List<Order> orders = orderRepository.findOrdersBySupplierId(supplier.getId());
+        List<Order> orders = orderRepository.findOrdersBySupplierId(supplier.getId(), orderBy, orderDirection, skip, top);
 
         return orderConverter.to(orders);
     }

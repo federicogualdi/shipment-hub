@@ -54,10 +54,10 @@ public class OrderRest {
     }
 
     @GET
-    public List<OrderDto> getOrders() {
+    public List<OrderDto> getOrders(@QueryParam("orderBy") String orderBy, @QueryParam("orderDirection") String orderDirection, @QueryParam("skip") Integer skip, @QueryParam("top") Integer top) {
         logger.trace("Requested orders retrieving");
         // call to authService that given a valid JWT token it will retrieve Supplier data
         Supplier supplier = authService.getSupplier("FAKE_JWT");
-        return orderService.getOrders(supplier);
+        return orderService.getOrders(supplier, orderBy, orderDirection, skip, top);
     }
 }
