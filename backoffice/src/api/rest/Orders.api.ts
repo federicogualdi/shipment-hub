@@ -19,5 +19,10 @@ export const getOrders = async (filters?: OrderFilter): Promise<OrderDto[]> => {
     headers: {
       'Content-Type': 'application/json'
     }
-  }).then(async (res) => await res.json());
+  }).then(async (res) => {
+    if (!res.ok) {
+      throw new Error(`Orders api return an error:${res.status}`);
+    }
+    return await res.json();
+  });
 };

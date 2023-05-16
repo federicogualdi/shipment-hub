@@ -11,7 +11,8 @@ const headerStyles = createUseStyles({
   },
   'header-title': {
     fontSize: '4rem',
-    textAlign: 'center'
+    textAlign: 'center',
+    color: 'rgb(32, 35, 41)'
   },
   '@media screen and (max-width: 600px)': {
     'header-title': {
