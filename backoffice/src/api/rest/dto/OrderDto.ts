@@ -1,6 +1,10 @@
-import { Package } from './PackageDto';
+import { DepotDto } from './DepotDto';
+import { PackageDto } from './PackageDto';
+import { SupplierDto } from './SupplierDto';
 
-export interface Order {
+export interface OrderDto {
   id: number;
-  packages: Package[];
+  depot: DepotDto;
+  supplier: SupplierDto;
+  packages: PackageDto[];
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { Order } from '../api';
+import { OrderDto } from '../api';
 import OrderItem from './order/OrderItem';
 
 const orderStyles = createUseStyles({
@@ -14,12 +14,12 @@ const orderStyles = createUseStyles({
   }
 });
 
-const listItems = (orders: Order[]) =>
+const listItems = (orders: OrderDto[]) =>
   orders.map((order) => <OrderItem key={order.id} order={order} />);
 
-const OrderList = (orders: Order[]) => {
+const OrderList = (props: { orders: OrderDto[] }) => {
   const styles = orderStyles();
-  return <div className={styles.orders}>{listItems(orders)}</div>;
+  return <div className={styles.orders}>{listItems(props.orders)}</div>;
 };
 
 export default OrderList;

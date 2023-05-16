@@ -1,9 +1,9 @@
-import { Order } from './dto';
+import { OrderDto } from './dto';
 import { OrderFilter } from './dto/OrderFilter';
 
-const ORDERS_ENDPOINT = 'http://localhost/api/orders';
+const ORDERS_ENDPOINT = 'http://localhost:8080/orders';
 
-export const getOrders = async (filters?: OrderFilter): Promise<Order[]> => {
+export const getOrders = async (filters?: OrderFilter): Promise<OrderDto[]> => {
   const qp = '?';
   const params: string[] = [];
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import OrderList from './OrderList';
-import { Order, getOrders } from '../api';
+import { OrderDto, getOrders } from '../api';
 import { OrderFilter } from '../api/rest/dto/OrderFilter';
 
 const orderStyles = createUseStyles({
@@ -15,7 +15,7 @@ const orderStyles = createUseStyles({
   }
 });
 const Orders = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderDto[]>([]);
 
   const [filterName, setFilterName] = useState<string>();
 
@@ -29,7 +29,11 @@ const Orders = () => {
   }, [filterName]);
 
   const styles = orderStyles();
-  return <>{OrderList(orders)}</>;
+  return (
+    <>
+      <OrderList orders={orders}></OrderList>
+    </>
+  );
 };
 
 export default Orders;
